@@ -1,0 +1,56 @@
+# DEPLOYMENT
+resource "kubernetes_deployment" "pod_deploy" {
+  metadata {
+    name = "${var.metadata_deployment}"
+    labels = {
+      test = "${var.labels_name}"
+    }
+  }
+
+  spec {
+    replicas = "${var.replicas}"
+
+    selector {
+      match_labels = {
+        test = "${var.labels_name}"
+      }
+    }
+
+    template {
+      metadata {
+        labels = {
+          test = "${var.labels_name}"
+        }
+      }
+
+      spec {
+        container {
+          image = "${var.image}"
+          name  = "${var.container_name}"
+
+          
+          }
+        }
+      
+    }
+  }
+}
+
+#SERVICE NODEPORT
+resource "kubernetes_service" "nodeport_service" {
+  metadata {
+    name = "${var.metadata_service}"
+  }
+  spec {
+    selector = {
+      app = "${kubernetes_deployment.pod_deploy.metadata.0.labels.test}"
+    }
+    port {
+      port        = 8080
+      target_port = 80
+    }
+
+    type = "NodePort"
+  }
+
+
