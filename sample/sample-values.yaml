@@ -1,0 +1,17 @@
+metadata: 
+  name: webserver
+  labels:
+    name: label-name
+spec:
+  replicas: 3
+  containers:
+    name: web-app
+    image: nginx:1.16-alpine
+  selector:
+    matchLabels:
+      app: web-store
+  template:
+    spec:
+      matchExpression:
+        key: app
+        values: web-store

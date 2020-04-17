@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.metadata.name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.spec.selector.matchLabels.app }}
+  replicas: {{ .Values.spec.replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.spec.selector.matchLabels.app }}
+    spec:
+      affinity:
+        podAntiAffinity: #making sure it will deploy to all nodes.
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: {{ .Values.spec.template.spec.matchExpression.key }}
+                operator: In
+                values:
+                - {{ .Values.spec.template.spec.matchExpression.values }}
+            topologyKey: "kubernetes.io/hostname"
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: {{ .Values.spec.template.spec.matchExpression.key }}
+                operator: In
+                values:
+                - {{ .Values.spec.template.spec.matchExpression.values }}
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: {{ .Values.spec }}
+        image: {{ .Values.spec.containers.image }}
